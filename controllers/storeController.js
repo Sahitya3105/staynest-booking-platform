@@ -31,7 +31,7 @@ exports.getBookings = (req, res, next) => {
 exports.getFavouriteList = (req, res, next) => {
   Favourite.getFavourites(favourites => {
   Home.fetchAll().then((registeredHomes) =>{
-      const favouriteHomes = registeredHomes.filter(home => favourites.includes(home.id));
+      const favouriteHomes = registeredHomes.filter(home => favourites.includes(home._id));
       res.render("store/favourite-list", {
         favouriteHomes: favouriteHomes,
         pageTitle: "My Favourites",
@@ -62,9 +62,8 @@ exports.postRemoveFromFavourite = (req, res, next) => {
 
 exports.getHomeDetails = (req, res, next) => {
   const homeId = req.params.homeId;
-  Home.findById(homeId).then(([homes]) => {
-    const home=homes[0];
-    if (!home) {
+  Home.findById(homeId).then((home) => {
+        if (!home) {
       console.log("Home not found");
       res.redirect("/homes");
     } else {
