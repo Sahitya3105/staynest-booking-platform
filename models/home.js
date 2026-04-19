@@ -1,20 +1,41 @@
-const {ObjectId}=require('mongodb');
+const { ObjectId } = require("mongodb");
 const { getDB } = require("../utils/database");
 
 module.exports = class Home {
-  constructor(houseName, price, location, rating, photoUrl, description, id) {
+  constructor(houseName, price, location, rating, photoUrl, description, _id) {
     this.houseName = houseName;
     this.price = price;
     this.location = location;
     this.rating = rating;
     this.photoUrl = photoUrl;
     this.description = description;
-    this.id = id;
+    if (_id) {
+      this._id = _id;
+    }
   }
 
   save() {
     const db = getDB();
-    return db.collection("homes").insertOne(this);
+    const updateData = {
+              houseName: this.houseName,
+              price: this.price,
+              location: this.location,
+              rating: this.rating,
+              photoUrl: this.photoUrl,
+              description: this.description,
+            };
+    if (this._id) {
+      return db
+        .collection("homes")
+        .updateOne(
+          { _id: new ObjectId(String(this._id)) },
+          {
+            $set: updateData,
+          },
+        );
+    } else {
+      return db.collection("homes").insertOne(this);
+    }
   }
 
   static fetchAll() {
@@ -30,5 +51,10 @@ module.exports = class Home {
       .next();
   }
 
-  static deleteById(homeId) {}
+  static deleteById(homeId) {
+    const db = getDB();
+    return db
+      .collection("homes")
+      .deleteOne({ _id: new ObjectId(String(homeId)) });
+  }
 };
