@@ -18,14 +18,24 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(express.urlencoded());
+app.use((req,res,next) => {
+  req.isLoggedIn = req.get("Cookie")?req.get("Cookie").split("=")[1]==='true' : false;
+  next();
+});
 app.use(storeRouter);
+app.use("/host", (req, res, next) => {
+  if (!res.isLoggedIn) {
+    return res.redirect("/login");
+  }
+  next();
+});
 app.use("/host", hostRouter);
 app.use(authRouter);
 app.use(express.static(path.join(rootDir, "public")));
 
 app.use(errorsController.pageNotFound);
 
-const PORT =4000;
+const PORT = 5000;
 
 mongoose
   .connect(

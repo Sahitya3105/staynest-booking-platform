@@ -1,0 +1,2563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RADAR — Samsung PRISM 2026 Hackathon Proposal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    /* ===== THEME & TOKENS ===== */
+    :root {
+      --samsung-blue: #1428A0;
+      --samsung-light: #2563EB;
+      --accent-cyan: #06B6D4;
+      --accent-purple: #7C3AED;
+      --accent-emerald: #10B981;
+      --accent-amber: #F59E0B;
+      --accent-red: #EF4444;
+      --dark-900: #0A0E1A;
+      --dark-800: #0F1629;
+      --dark-700: #141C35;
+      --dark-600: #1E2A4A;
+      --dark-500: #253055;
+      --dark-400: #2E3B66;
+      --gray-100: #E8ECF8;
+      --gray-200: #C5CEEB;
+      --gray-300: #9BAACB;
+      --gray-400: #6B7DAF;
+      --text-primary: #F0F4FF;
+      --text-secondary: #C5CEEB;
+      --text-muted: #8896C0;
+      --border: rgba(100,130,200,0.2);
+      --border-bright: rgba(100,130,200,0.45);
+      --glass: rgba(14,22,55,0.75);
+      --glow-blue: 0 0 30px rgba(37,99,235,0.25);
+      --glow-cyan: 0 0 30px rgba(6,182,212,0.2);
+      --glow-purple: 0 0 30px rgba(124,58,237,0.2);
+    }
+
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 10.5pt; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark-900);
+      color: var(--text-primary);
+      line-height: 1.65;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ===== PAGE LAYOUT ===== */
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 18mm 18mm 16mm 18mm;
+      background: var(--dark-800);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page + .page {
+      margin-top: 2mm;
+      border-top: 2px solid var(--border);
+    }
+
+    /* ===== BACKGROUND DECORATIVE ===== */
+    .page::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .page::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: -60px;
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ===== COVER PAGE ===== */
+    .cover-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 297mm;
+      padding: 20mm;
+      background: linear-gradient(145deg, #060D20 0%, #0A1535 35%, #0D1A45 65%, #0A1535 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cover-bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(37,99,235,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,99,235,0.08) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    .cover-glow-1 {
+      position: absolute;
+      top: 15%; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 300px;
+      background: radial-gradient(ellipse, rgba(37,99,235,0.18) 0%, transparent 70%);
+    }
+    .cover-glow-2 {
+      position: absolute;
+      bottom: 20%; left: 20%;
+      width: 320px; height: 280px;
+      background: radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 70%);
+    }
+    .cover-glow-3 {
+      position: absolute;
+      bottom: 10%; right: 15%;
+      width: 280px; height: 240px;
+      background: radial-gradient(ellipse, rgba(6,182,212,0.10) 0%, transparent 70%);
+    }
+
+    .cover-badge {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(20,40,160,0.6), rgba(37,99,235,0.4));
+      border: 1px solid rgba(37,99,235,0.5);
+      border-radius: 24px;
+      padding: 7px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .cover-badge .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .cover-logo-ring {
+      position: relative;
+      width: 110px; height: 110px;
+      margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .cover-logo-ring::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #1428A0, #2563EB, #06B6D4, #7C3AED, #1428A0);
+      padding: 3px;
+    }
+
+    .cover-logo-inner {
+      position: relative;
+      width: 96px; height: 96px;
+      background: linear-gradient(135deg, #0D1840, #162040);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-size: 30pt;
+      font-weight: 800;
+      background-clip: text;
+      -webkit-background-clip: text;
+      z-index: 1;
+    }
+
+    .radar-icon-svg {
+      width: 54px; height: 54px;
+    }
+
+    .cover-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 58pt;
+      font-weight: 900;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #FFFFFF 0%, #93C5FD 40%, #6EE7FA 75%, #818CF8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .cover-subtitle-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5pt;
+      color: var(--gray-300);
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .cover-tagline {
+      font-size: 12pt;
+      font-weight: 400;
+      color: var(--text-secondary);
+      text-align: center;
+      max-width: 400px;
+      line-height: 1.6;
+      margin-bottom: 36px;
+      font-style: italic;
+    }
+
+    .cover-themes {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 42px;
+    }
+
+    .theme-chip {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 8.5pt;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .theme-chip-primary {
+      background: linear-gradient(135deg, rgba(20,40,160,0.7), rgba(37,99,235,0.5));
+      border: 1px solid rgba(37,99,235,0.6);
+      color: #93C5FD;
+    }
+
+    .theme-chip-secondary {
+      background: linear-gradient(135deg, rgba(124,58,237,0.5), rgba(109,40,217,0.3));
+      border: 1px solid rgba(124,58,237,0.5);
+      color: #C4B5FD;
+    }
+
+    .cover-divider {
+      width: 160px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(37,99,235,0.6), rgba(6,182,212,0.6), transparent);
+      margin-bottom: 28px;
+    }
+
+    .cover-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .meta-item {
+      text-align: center;
+      padding: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .meta-label {
+      font-size: 7pt;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      font-size: 8.5pt;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .cover-footer {
+      position: absolute;
+      bottom: 20mm;
+      left: 0; right: 0;
+      text-align: center;
+    }
+
+    .cover-footer-text {
+      font-size: 7.5pt;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1px;
+    }
+
+    /* ===== SECTION HEADERS ===== */
+    .section-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-number::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(6,182,212,0.4), transparent);
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20pt;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 18px;
+      line-height: 1.2;
+    }
+
+    .section-title span {
+      background: linear-gradient(135deg, #60A5FA, #34D399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subsection-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13pt;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 22px 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .subsection-title::before {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 18px;
+      background: linear-gradient(180deg, var(--accent-cyan), var(--samsung-light));
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    /* ===== CALLOUT / HIGHLIGHT BOXES ===== */
+    .callout {
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      border-left: 4px solid;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .callout::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.06;
+      background: currentColor;
+    }
+
+    .callout-blue {
+      border-color: var(--samsung-light);
+      background: rgba(37,99,235,0.08);
+    }
+
+    .callout-cyan {
+      border-color: var(--accent-cyan);
+      background: rgba(6,182,212,0.08);
+    }
+
+    .callout-purple {
+      border-color: var(--accent-purple);
+      background: rgba(124,58,237,0.08);
+    }
+
+    .callout-amber {
+      border-color: var(--accent-amber);
+      background: rgba(245,158,11,0.08);
+    }
+
+    .callout-red {
+      border-color: var(--accent-red);
+      background: rgba(239,68,68,0.08);
+    }
+
+    .callout-emerald {
+      border-color: var(--accent-emerald);
+      background: rgba(16,185,129,0.08);
+    }
+
+    .callout-title {
+      font-weight: 700;
+      font-size: 9.5pt;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .callout-blue .callout-title { color: #93C5FD; }
+    .callout-cyan .callout-title { color: #67E8F9; }
+    .callout-purple .callout-title { color: #C4B5FD; }
+    .callout-amber .callout-title { color: #FCD34D; }
+    .callout-red .callout-title { color: #FCA5A5; }
+    .callout-emerald .callout-title { color: #6EE7B7; }
+
+    .callout p { font-size: 9pt; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ===== TABLES ===== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 9pt;
+    }
+
+    thead th {
+      background: linear-gradient(135deg, rgba(20,40,160,0.5), rgba(37,99,235,0.3));
+      color: #93C5FD;
+      font-weight: 700;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 8.5pt;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid rgba(37,99,235,0.4);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(255,255,255,0.025);
+    }
+
+    tbody td {
+      padding: 9px 14px;
+      color: var(--text-secondary);
+      vertical-align: top;
+      line-height: 1.55;
+    }
+
+    tbody td:first-child {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 7.5pt;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-blue { background: rgba(37,99,235,0.25); color: #93C5FD; border: 1px solid rgba(37,99,235,0.4); }
+    .badge-cyan { background: rgba(6,182,212,0.2); color: #67E8F9; border: 1px solid rgba(6,182,212,0.35); }
+    .badge-purple { background: rgba(124,58,237,0.2); color: #C4B5FD; border: 1px solid rgba(124,58,237,0.35); }
+    .badge-emerald { background: rgba(16,185,129,0.2); color: #6EE7B7; border: 1px solid rgba(16,185,129,0.35); }
+    .badge-amber { background: rgba(245,158,11,0.2); color: #FCD34D; border: 1px solid rgba(245,158,11,0.35); }
+    .badge-red { background: rgba(239,68,68,0.2); color: #FCA5A5; border: 1px solid rgba(239,68,68,0.35); }
+    .badge-free { background: rgba(16,185,129,0.15); color: #6EE7B7; border: 1px solid rgba(16,185,129,0.3); }
+
+    /* ===== FLOWCHART / DIAGRAM STYLES ===== */
+    .diagram-wrapper {
+      margin: 20px 0;
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(10,14,26,0.9), rgba(15,22,41,0.9));
+      border: 1px solid var(--border-bright);
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .diagram-wrapper::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--samsung-blue), var(--accent-cyan), var(--accent-purple));
+    }
+
+    .diagram-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      color: var(--accent-cyan);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* FLOWCHART - SVG-based */
+    .flow-svg {
+      width: 100%;
+      overflow: visible;
+    }
+
+    /* Box styles for flowcharts */
+    .fc-box {
+      rx: 8;
+      ry: 8;
+    }
+
+    /* ===== SYSTEM ARCHITECTURE DIAGRAM ===== */
+    .arch-diagram {
+      display: grid;
+      gap: 0;
+      width: 100%;
+    }
+
+    .arch-row {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 0;
+    }
+
+    /* Architecture nodes */
+    .arch-node {
+      padding: 12px 16px;
+      border-radius: 10px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .arch-node-label {
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .arch-node-sub {
+      font-size: 7pt;
+      opacity: 0.7;
+      margin-top: 3px;
+    }
+
+    .arch-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      flex-shrink: 0;
+    }
+
+    .arch-connector-v {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 24px;
+    }
+
+    /* ===== STATS GRID ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(14,22,55,0.8), rgba(18,28,65,0.8));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 12px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .stat-card-blue::before { background: linear-gradient(90deg, var(--samsung-blue), var(--samsung-light)); }
+    .stat-card-cyan::before { background: linear-gradient(90deg, var(--accent-cyan), #22D3EE); }
+    .stat-card-purple::before { background: linear-gradient(90deg, var(--accent-purple), #8B5CF6); }
+    .stat-card-emerald::before { background: linear-gradient(90deg, var(--accent-emerald), #34D399); }
+
+    .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20pt;
+      font-weight: 800;
+      line-height: 1;
+      margin: 4px 0;
+    }
+
+    .stat-blue .stat-value { color: #60A5FA; }
+    .stat-cyan .stat-value { color: #22D3EE; }
+    .stat-purple .stat-value { color: #A78BFA; }
+    .stat-emerald .stat-value { color: #34D399; }
+
+    .stat-label {
+      font-size: 7.5pt;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* ===== USER JOURNEY CARDS ===== */
+    .journey-card {
+      background: linear-gradient(135deg, rgba(10,14,26,0.9), rgba(15,22,41,0.85));
+      border: 1px solid var(--border-bright);
+      border-radius: 14px;
+      padding: 20px;
+      margin: 16px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .journey-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .journey-blue::before { background: linear-gradient(90deg, var(--samsung-blue), var(--accent-cyan)); }
+    .journey-red::before { background: linear-gradient(90deg, var(--accent-red), var(--accent-amber)); }
+    .journey-green::before { background: linear-gradient(90deg, var(--accent-emerald), var(--accent-cyan)); }
+
+    .journey-trigger {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .journey-trigger-icon {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .journey-trigger-text .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7pt;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .journey-trigger-text .value {
+      font-size: 9pt;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .journey-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .journey-step {
+      display: flex;
+      gap: 14px;
+      position: relative;
+    }
+
+    .journey-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 32px;
+      bottom: -4px;
+      width: 2px;
+      background: linear-gradient(180deg, rgba(37,99,235,0.5), rgba(6,182,212,0.3));
+    }
+
+    .step-num {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8pt;
+      font-weight: 700;
+      flex-shrink: 0;
+      z-index: 1;
+      background: linear-gradient(135deg, rgba(20,40,160,0.7), rgba(37,99,235,0.5));
+      border: 1px solid rgba(37,99,235,0.5);
+      color: #93C5FD;
+    }
+
+    .step-content {
+      padding: 4px 0 16px 0;
+    }
+
+    .step-action {
+      font-size: 8.5pt;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+
+    .step-detail {
+      font-size: 8pt;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .output-box {
+      margin-top: 14px;
+      background: rgba(5,10,25,0.8);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      color: var(--gray-200);
+      line-height: 1.7;
+    }
+
+    .output-box .out-label {
+      font-size: 7pt;
+      color: var(--accent-cyan);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+    }
+
+    /* ===== UPGRADE FEATURE CARDS ===== */
+    .upgrade-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .upgrade-card {
+      background: linear-gradient(135deg, rgba(10,14,26,0.8), rgba(18,26,55,0.8));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .upgrade-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .uc1::before { background: linear-gradient(90deg, #1428A0, #2563EB); }
+    .uc2::before { background: linear-gradient(90deg, #7C3AED, #A855F7); }
+    .uc3::before { background: linear-gradient(90deg, #DC2626, #F59E0B); }
+    .uc4::before { background: linear-gradient(90deg, #059669, #10B981); }
+    .uc5::before { background: linear-gradient(90deg, #0891B2, #06B6D4); }
+
+    .upgrade-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28pt;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 4px;
+      opacity: 0.12;
+      position: absolute;
+      top: 8px; right: 14px;
+    }
+
+    .upgrade-icon {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .upgrade-title {
+      font-size: 10pt;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .upgrade-body {
+      font-size: 8pt;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .upgrade-tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .tech-tag {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 7pt;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .tt-blue { background: rgba(37,99,235,0.2); color: #93C5FD; }
+    .tt-purple { background: rgba(124,58,237,0.2); color: #C4B5FD; }
+    .tt-cyan { background: rgba(6,182,212,0.2); color: #67E8F9; }
+    .tt-emerald { background: rgba(16,185,129,0.2); color: #6EE7B7; }
+    .tt-amber { background: rgba(245,158,11,0.2); color: #FCD34D; }
+    .tt-red { background: rgba(239,68,68,0.2); color: #FCA5A5; }
+
+    /* ===== TREND DETECTION SHOWCASE ===== */
+    .trend-showcase {
+      background: linear-gradient(135deg, rgba(5,10,22,0.95), rgba(12,20,45,0.95));
+      border: 1px solid rgba(6,182,212,0.3);
+      border-radius: 14px;
+      padding: 20px;
+      margin: 16px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .trend-showcase::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #059669, #06B6D4, #7C3AED);
+    }
+
+    .trend-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .trend-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16,185,129,0.15);
+      border: 1px solid rgba(16,185,129,0.35);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 7.5pt;
+      font-weight: 700;
+      color: #6EE7B7;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1px;
+    }
+
+    .trend-name {
+      font-size: 11pt;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .trend-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .trend-stat-item {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .trend-stat-val {
+      font-family: 'Outfit', sans-serif;
+      font-size: 15pt;
+      font-weight: 800;
+      color: #34D399;
+      line-height: 1;
+    }
+
+    .trend-stat-lbl {
+      font-size: 7pt;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .trend-implication {
+      background: rgba(16,185,129,0.07);
+      border-left: 3px solid var(--accent-emerald);
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      margin: 10px 0;
+      font-size: 8.5pt;
+      color: var(--text-secondary);
+    }
+
+    .trend-recommendation {
+      background: rgba(37,99,235,0.08);
+      border-left: 3px solid var(--samsung-light);
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      font-size: 8.5pt;
+      color: var(--text-secondary);
+    }
+
+    .trend-implication strong, .trend-recommendation strong {
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 3px;
+      font-size: 7.5pt;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ===== EXPERIMENT SUGGESTION CARD ===== */
+    .experiment-card {
+      background: rgba(5,10,22,0.9);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+
+    .experiment-header {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      color: var(--accent-cyan);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .experiment-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 12px;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .exp-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      color: var(--text-muted);
+      padding-top: 2px;
+      white-space: nowrap;
+    }
+
+    .exp-value {
+      font-size: 8.5pt;
+      color: var(--text-primary);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .exp-benefit {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.25);
+      border-radius: 8px;
+    }
+
+    .exp-benefit-label {
+      font-size: 7pt;
+      color: var(--accent-emerald);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 3px;
+    }
+
+    .exp-benefit-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13pt;
+      font-weight: 800;
+      color: #34D399;
+    }
+
+    /* ===== TIMELINE ===== */
+    .timeline-item {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 8px;
+      align-items: flex-start;
+    }
+
+    .timeline-day {
+      background: linear-gradient(135deg, rgba(20,40,160,0.6), rgba(37,99,235,0.4));
+      border: 1px solid rgba(37,99,235,0.4);
+      border-radius: 8px;
+      padding: 6px 12px;
+      text-align: center;
+      flex-shrink: 0;
+      min-width: 70px;
+    }
+
+    .timeline-day-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11pt;
+      font-weight: 800;
+      color: #60A5FA;
+      line-height: 1;
+    }
+
+    .timeline-day-date {
+      font-size: 7pt;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .timeline-content {
+      flex: 1;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .timeline-task {
+      font-size: 9pt;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .timeline-output {
+      font-size: 8pt;
+      color: var(--text-muted);
+    }
+
+    /* ===== SKILL CARDS ===== */
+    .skill-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .skill-card {
+      background: rgba(14,22,55,0.7);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .skill-card::before {
+      content: attr(data-num);
+      font-family: 'Outfit', sans-serif;
+      font-size: 7pt;
+      font-weight: 800;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .skill-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5pt;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      margin-bottom: 5px;
+    }
+
+    .skill-desc {
+      font-size: 7.5pt;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ===== WHY RADAR WINS ===== */
+    .win-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .win-card {
+      background: linear-gradient(135deg, rgba(10,14,26,0.9), rgba(15,22,41,0.85));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+    }
+
+    .win-criterion {
+      font-size: 9pt;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .win-score {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13pt;
+      font-weight: 800;
+      color: var(--accent-cyan);
+    }
+
+    .win-bar {
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      margin: 8px 0;
+      overflow: hidden;
+    }
+
+    .win-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--samsung-light), var(--accent-cyan));
+    }
+
+    .win-detail {
+      font-size: 8pt;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-header-brand {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11pt;
+      font-weight: 800;
+      background: linear-gradient(135deg, #60A5FA, #34D399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-header-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7pt;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    /* ===== FOOTER ===== */
+    .page-footer {
+      position: absolute;
+      bottom: 10mm;
+      left: 18mm; right: 18mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7pt;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 6px;
+    }
+
+    /* ===== UTILITY ===== */
+    p { margin-bottom: 10px; color: var(--text-secondary); font-size: 9.5pt; line-height: 1.65; }
+    ul, ol { padding-left: 22px; margin-bottom: 12px; }
+    li { color: var(--text-secondary); font-size: 9pt; line-height: 1.7; margin-bottom: 2px; }
+    li::marker { color: var(--accent-cyan); }
+    strong { color: var(--text-primary); font-weight: 700; }
+    em { color: var(--gray-200); }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      background: rgba(37,99,235,0.12);
+      border: 1px solid rgba(37,99,235,0.2);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: #93C5FD;
+    }
+
+    blockquote {
+      border-left: 3px solid var(--accent-cyan);
+      padding: 10px 16px;
+      background: rgba(6,182,212,0.06);
+      border-radius: 0 8px 8px 0;
+      margin: 12px 0;
+      font-style: italic;
+      font-size: 9.5pt;
+      color: var(--text-secondary);
+    }
+
+    .split-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .split-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    .spacer-sm { height: 12px; }
+    .spacer-md { height: 20px; }
+
+    .label-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 7.5pt;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.5px;
+    }
+
+    .lc-mode-r2r { background: rgba(37,99,235,0.2); color: #93C5FD; border: 1px solid rgba(37,99,235,0.35); }
+    .lc-mode-sig { background: rgba(239,68,68,0.2); color: #FCA5A5; border: 1px solid rgba(239,68,68,0.35); }
+    .lc-mode-trend { background: rgba(16,185,129,0.2); color: #6EE7B7; border: 1px solid rgba(16,185,129,0.35); }
+
+    .insight-quote {
+      background: linear-gradient(135deg, rgba(20,40,160,0.15), rgba(124,58,237,0.1));
+      border: 1px solid rgba(37,99,235,0.25);
+      border-radius: 12px;
+      padding: 18px 22px;
+      text-align: center;
+      margin: 16px 0;
+    }
+
+    .insight-quote p {
+      font-size: 11pt;
+      font-style: italic;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ===== PRINT ===== */
+    @media print {
+      body { background: #0A0E1A; margin: 0; }
+      .page { margin: 0; width: 210mm; min-height: 297mm; page-break-after: always; }
+      .page:last-child { page-break-after: avoid; }
+      @page { size: A4; margin: 0; }
+    }
+
+    @media screen {
+      body { padding: 20px 0; background: #060A18; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========================================================
+     PAGE 1 — COVER
+     ======================================================== -->
+<div class="page cover-page">
+  <div class="cover-bg-grid"></div>
+  <div class="cover-glow-1"></div>
+  <div class="cover-glow-2"></div>
+  <div class="cover-glow-3"></div>
+
+  <div class="cover-badge">
+    <span class="dot"></span>
+    Samsung PRISM Hackathon 2026 — Phase 1 Proposal
+  </div>
+
+  <div class="cover-logo-ring">
+    <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg, #1428A0, #2563EB, #06B6D4, #7C3AED, #1428A0);"></div>
+    <div style="position:relative;width:96px;height:96px;background:linear-gradient(135deg,#0D1840,#162040);border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:1;">
+      <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+        <!-- Radar sweep circles -->
+        <circle cx="26" cy="26" r="23" stroke="rgba(37,99,235,0.3)" stroke-width="1"/>
+        <circle cx="26" cy="26" r="16" stroke="rgba(6,182,212,0.4)" stroke-width="1"/>
+        <circle cx="26" cy="26" r="9" stroke="rgba(6,182,212,0.6)" stroke-width="1.5"/>
+        <!-- Cross hairs -->
+        <line x1="26" y1="3" x2="26" y2="49" stroke="rgba(37,99,235,0.3)" stroke-width="1"/>
+        <line x1="3" y1="26" x2="49" y2="26" stroke="rgba(37,99,235,0.3)" stroke-width="1"/>
+        <!-- Sweep arc -->
+        <path d="M26 26 L26 5 A21 21 0 0 1 45 26 Z" fill="url(#sweepGrad)" opacity="0.5"/>
+        <!-- Blip -->
+        <circle cx="38" cy="16" r="2.5" fill="#06B6D4"/>
+        <circle cx="38" cy="16" r="5" fill="rgba(6,182,212,0.2)"/>
+        <!-- Center -->
+        <circle cx="26" cy="26" r="3" fill="#2563EB"/>
+        <defs>
+          <radialGradient id="sweepGrad" cx="50%" cy="100%" r="100%">
+            <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#1428A0" stop-opacity="0.1"/>
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <div class="cover-title">RADAR</div>
+  <div class="cover-subtitle-tag">Research Awareness, Detection And Response</div>
+
+  <div class="cover-tagline">
+    An autonomous OpenClaw agent that bridges global academic research
+    with your internal engineering work — simultaneously surfacing opportunities
+    and detecting competitive threats.
+  </div>
+
+  <div class="cover-themes">
+    <div class="theme-chip theme-chip-primary">🔬 Theme 1 — GenAI Research</div>
+    <div class="theme-chip theme-chip-secondary">⚡ Theme 3 — Productivity Platforms</div>
+  </div>
+
+  <div class="cover-divider"></div>
+
+  <div class="cover-meta">
+    <div class="meta-item">
+      <div class="meta-label">Event</div>
+      <div class="meta-value">PRISM 2026</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Phase</div>
+      <div class="meta-value">1 — Proposal</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Date</div>
+      <div class="meta-value">Apr 24, 2026</div>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <div class="cover-footer-text">CONFIDENTIAL · SAMSUNG PRISM 2026 · RADAR AGENT · OPENCLAW (NOMACLAW VARIANT)</div>
+  </div>
+</div>
+
+
+<!-- ========================================================
+     PAGE 2 — THEME + PROBLEM STATEMENT
+     ======================================================== -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-brand">RADAR</div>
+    <div class="page-header-meta">SAMSUNG PRISM 2026 · PHASE 1 PROPOSAL</div>
+  </div>
+
+  <!-- SECTION 1: Theme -->
+  <div class="section-number">Section 01 ─────────────────────</div>
+  <div class="section-title">Theme <span>Selected</span></div>
+
+  <div class="split-2">
+    <div class="callout callout-blue">
+      <div class="callout-title">🔬 Primary Theme</div>
+      <p><strong>Theme 1 — GenAI Research</strong><br/>
+      RADAR continuously monitors the global research landscape (ArXiv, Semantic Scholar) and delivers actionable intelligence, transforming how engineers interact with the academic frontier.</p>
+    </div>
+    <div class="callout callout-purple">
+      <div class="callout-title">⚡ Secondary Theme</div>
+      <p><strong>Theme 3 — Productivity Platforms</strong><br/>
+      RADAR converts research intelligence into structured engineering work items (GitHub issues, team alerts) — making AI a true research colleague for engineering teams.</p>
+    </div>
+  </div>
+
+  <div class="insight-quote">
+    <p>"RADAR is not a tool. It's an autonomous research colleague that never sleeps, never misses a paper, and always knows what matters to your team specifically."</p>
+  </div>
+
+  <div class="spacer-md"></div>
+
+  <!-- SECTION 2: Problem Statement -->
+  <div class="section-number">Section 02 ─────────────────────</div>
+  <div class="section-title">Problem <span>Statement</span></div>
+  <div class="subsection-title">The Research Intelligence Crisis at Scale</div>
+
+  <p>Large research engineering organizations like Samsung Research Institute face a <strong>dual research intelligence failure</strong> that compounds silently every week. Both failures share a single root cause: the absence of an autonomous agent that maintains living memory of internal engineering work while watching the global research world.</p>
+
+  <!-- Dual failure diagram -->
+  <div class="diagram-wrapper">
+    <div class="diagram-title">⬡ DUAL FAILURE FRAMEWORK</div>
+    <div class="split-2" style="gap:20px;">
+      <!-- Failure 1 -->
+      <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.25);border-radius:12px;padding:16px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:7pt;color:#FCA5A5;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">⚠ FAILURE 1</div>
+        <div style="font-size:10pt;font-weight:800;color:#FCA5A5;margin-bottom:10px;">The Opportunity Gap</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:rgba(239,68,68,0.08);border-radius:8px;padding:9px 12px;font-size:8pt;color:#FCA5A5;">📄 New paper published on ArXiv</div>
+          <div style="text-align:center;font-size:14pt;color:rgba(239,68,68,0.5);">↓</div>
+          <div style="background:rgba(239,68,68,0.08);border-radius:8px;padding:9px 12px;font-size:8pt;color:#FCA5A5;">👤 Requires senior engineer's time + deep codebase knowledge</div>
+          <div style="text-align:center;font-size:14pt;color:rgba(239,68,68,0.5);">↓</div>
+          <div style="background:rgba(239,68,68,0.15);border-radius:8px;padding:9px 12px;font-size:8pt;color:#FCA5A5;border:1px solid rgba(239,68,68,0.3);">❌ High-value papers sit unread for months</div>
+        </div>
+      </div>
+      <!-- Failure 2 -->
+      <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:16px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:7pt;color:#FCD34D;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">⚠ FAILURE 2</div>
+        <div style="font-size:10pt;font-weight:800;color:#FCD34D;margin-bottom:10px;">The Competitive Blind Spot</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:rgba(245,158,11,0.08);border-radius:8px;padding:9px 12px;font-size:8pt;color:#FCD34D;">🏢 Competitor publishes overlapping research</div>
+          <div style="text-align:center;font-size:14pt;color:rgba(245,158,11,0.5);">↓</div>
+          <div style="background:rgba(245,158,11,0.08);border-radius:8px;padding:9px 12px;font-size:8pt;color:#FCD34D;">🔍 Discovered by accident weeks later</div>
+          <div style="text-align:center;font-size:14pt;color:rgba(245,158,11,0.5);">↓</div>
+          <div style="background:rgba(245,158,11,0.15);border-radius:8px;padding:9px 12px;font-size:8pt;color:#FCD34D;border:1px solid rgba(245,158,11,0.3);">❌ IP advantage lost, patents threatened</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arrow pointing to solution -->
+    <div style="text-align:center;margin:16px 0 10px;">
+      <div style="display:inline-flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(20,40,160,0.4),rgba(6,182,212,0.2));border:1px solid rgba(37,99,235,0.3);border-radius:10px;padding:10px 24px;">
+        <span style="font-size:14pt;">⬇</span>
+        <span style="font-size:9pt;font-weight:700;color:#93C5FD;">RADAR solves both. One agent. Two intelligent modes. Complete research situational awareness.</span>
+        <span style="font-size:14pt;">⬇</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card stat-card-blue stat-blue">
+      <div class="stat-value">10K+</div>
+      <div class="stat-label" style="color:var(--text-muted)">Patents filed by Samsung/year</div>
+    </div>
+    <div class="stat-card stat-card-cyan stat-cyan">
+      <div class="stat-value">847</div>
+      <div class="stat-label" style="color:var(--text-muted)">Papers scanned per cycle</div>
+    </div>
+    <div class="stat-card stat-card-purple stat-purple">
+      <div class="stat-value">0 hrs</div>
+      <div class="stat-label" style="color:var(--text-muted)">Manual engineer time needed</div>
+    </div>
+    <div class="stat-card stat-card-emerald stat-emerald">
+      <div class="stat-value">₹0</div>
+      <div class="stat-label" style="color:var(--text-muted)">Total API cost per day</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>RADAR · Samsung PRISM 2026</span>
+    <span>Page 2</span>
+    <span>CONFIDENTIAL</span>
+  </div>
+</div>
+
+
+<!-- ========================================================
+     PAGE 3 — SYSTEM ARCHITECTURE
+     ======================================================== -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-brand">RADAR</div>
+    <div class="page-header-meta">SECTION 03 — ARCHITECTURE</div>
+  </div>
+
+  <div class="section-number">Section 03 ─────────────────────</div>
+  <div class="section-title">Detailed <span>Architecture</span></div>
+
+  <!-- High-level system architecture SVG -->
+  <div class="diagram-wrapper">
+    <div class="diagram-title">⬡ SYSTEM ARCHITECTURE OVERVIEW</div>
+
+    <svg viewBox="0 0 580 380" class="flow-svg" style="max-height:380px;">
+      <defs>
+        <linearGradient id="gAgent" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#0D1840"/>
+          <stop offset="100%" stop-color="#162040"/>
+        </linearGradient>
+        <linearGradient id="gMem" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="rgba(20,40,160,0.4)"/>
+          <stop offset="100%" stop-color="rgba(37,99,235,0.2)"/>
+        </linearGradient>
+        <linearGradient id="gSkills" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="rgba(6,182,212,0.15)"/>
+          <stop offset="100%" stop-color="rgba(37,99,235,0.1)"/>
+        </linearGradient>
+        <linearGradient id="gInputs" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="rgba(124,58,237,0.15)"/>
+          <stop offset="100%" stop-color="rgba(109,40,217,0.1)"/>
+        </linearGradient>
+        <linearGradient id="gGH" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="rgba(16,185,129,0.2)"/>
+          <stop offset="100%" stop-color="rgba(5,150,105,0.1)"/>
+        </linearGradient>
+        <linearGradient id="gTG" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="rgba(37,99,235,0.2)"/>
+          <stop offset="100%" stop-color="rgba(14,28,80,0.1)"/>
+        </linearGradient>
+        <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#2563EB" opacity="0.8"/>
+        </marker>
+        <marker id="arrowCyan" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#06B6D4" opacity="0.8"/>
+        </marker>
+        <marker id="arrowPurple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#7C3AED" opacity="0.8"/>
+        </marker>
+        <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#10B981" opacity="0.8"/>
+        </marker>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+        </filter>
+      </defs>
+
+      <!-- RADAR AGENT outer container -->
+      <rect x="80" y="10" width="420" height="220" rx="14" fill="url(#gAgent)" stroke="rgba(37,99,235,0.5)" stroke-width="1.5"/>
+      <!-- gradient top border -->
+      <rect x="80" y="10" width="420" height="3" rx="1.5" fill="url(#gSkills)"/>
+      <text x="290" y="30" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="800" fill="#93C5FD">RADAR AGENT</text>
+      <text x="290" y="44" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="rgba(100,130,200,0.7)" letter-spacing="1">OPENCLAW CORE</text>
+
+      <!-- Memory Layer -->
+      <rect x="96" y="56" width="130" height="100" rx="10" fill="url(#gMem)" stroke="rgba(37,99,235,0.35)" stroke-width="1"/>
+      <text x="161" y="73" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#60A5FA">MEMORY LAYER</text>
+      <text x="116" y="90" font-family="JetBrains Mono,monospace" font-size="6.5" fill="rgba(148,163,184,0.9)">📁 repo_context/</text>
+      <text x="116" y="104" font-family="JetBrains Mono,monospace" font-size="6.5" fill="rgba(148,163,184,0.75)">   repo_A.md</text>
+      <text x="116" y="117" font-family="JetBrains Mono,monospace" font-size="6.5" fill="rgba(148,163,184,0.9)">📁 internal_briefs/</text>
+      <text x="116" y="130" font-family="JetBrains Mono,monospace" font-size="6.5" fill="rgba(148,163,184,0.75)">   project_orion.md</text>
+      <text x="116" y="143" font-family="JetBrains Mono,monospace" font-size="6.5" fill="rgba(148,163,184,0.9)">📁 competitor_profiles/</text>
+
+      <!-- Heartbeat -->
+      <rect x="248" y="56" width="130" height="100" rx="10" fill="rgba(16,24,50,0.8)" stroke="rgba(6,182,212,0.3)" stroke-width="1"/>
+      <text x="313" y="73" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#67E8F9">HEARTBEAT</text>
+      <text x="313" y="86" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(100,130,200,0.7)">DAILY SCHEDULE</text>
+      <text x="268" y="103" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#34D399">06:00</text>
+      <text x="300" y="103" font-family="JetBrains Mono,monospace" font-size="6.5" fill="rgba(148,163,184,0.8)">→ Fetch papers</text>
+      <text x="268" y="116" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#34D399">06:30</text>
+      <text x="300" y="116" font-family="JetBrains Mono,monospace" font-size="6.5" fill="rgba(148,163,184,0.8)">→ Opportunity Scan</text>
+      <text x="268" y="129" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#34D399">07:00</text>
+      <text x="300" y="129" font-family="JetBrains Mono,monospace" font-size="6.5" fill="rgba(148,163,184,0.8)">→ Threat Scan</text>
+      <text x="268" y="142" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#34D399">07:30</text>
+      <text x="300" y="142" font-family="JetBrains Mono,monospace" font-size="6.5" fill="rgba(148,163,184,0.8)">→ Brief sent</text>
+
+      <!-- Skills strip -->
+      <rect x="96" y="172" width="390" height="46" rx="10" fill="url(#gSkills)" stroke="rgba(6,182,212,0.3)" stroke-width="1"/>
+      <text x="291" y="188" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#67E8F9">SKILLS — ReAct Loop</text>
+      <!-- skill boxes -->
+      <rect x="104" y="196" width="66" height="16" rx="4" fill="rgba(37,99,235,0.3)" stroke="rgba(37,99,235,0.4)" stroke-width="0.5"/>
+      <text x="137" y="207" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="#93C5FD">PaperFetcher</text>
+      <text x="174" y="207" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#60A5FA">→</text>
+      <rect x="184" y="196" width="80" height="16" rx="4" fill="rgba(6,182,212,0.2)" stroke="rgba(6,182,212,0.4)" stroke-width="0.5"/>
+      <text x="224" y="207" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="#67E8F9">OpportunityMatcher</text>
+      <text x="267" y="207" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#60A5FA">→</text>
+      <rect x="277" y="196" width="72" height="16" rx="4" fill="rgba(239,68,68,0.2)" stroke="rgba(239,68,68,0.35)" stroke-width="0.5"/>
+      <text x="313" y="207" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="#FCA5A5">ThreatDetector</text>
+      <text x="352" y="207" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#60A5FA">→</text>
+      <rect x="362" y="196" width="80" height="16" rx="4" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.35)" stroke-width="0.5"/>
+      <text x="402" y="207" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="#6EE7B7">OutputDispatcher</text>
+
+      <!-- Vertical arrows from agent -->
+      <line x1="180" y1="230" x2="180" y2="262" stroke="#10B981" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowGreen)"/>
+      <line x1="400" y1="230" x2="400" y2="262" stroke="#2563EB" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowBlue)"/>
+
+      <!-- GitHub box -->
+      <rect x="90" y="265" width="175" height="60" rx="12" fill="url(#gGH)" stroke="rgba(16,185,129,0.35)" stroke-width="1"/>
+      <text x="177" y="284" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#6EE7B7">GitHub API</text>
+      <text x="177" y="297" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(110,231,183,0.7)">Creates issues for opportunities</text>
+      <text x="177" y="309" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(110,231,183,0.7)">Links papers → engineering work</text>
+      <text x="141" y="321" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(110,231,183,0.5)">REST API · 5000 req/hr · Free</text>
+
+      <!-- Telegram box -->
+      <rect x="315" y="265" width="175" height="60" rx="12" fill="url(#gTG)" stroke="rgba(37,99,235,0.35)" stroke-width="1"/>
+      <text x="403" y="284" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#93C5FD">Telegram Bot</text>
+      <text x="403" y="297" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(147,197,253,0.7)">Fires threat alerts immediately</text>
+      <text x="403" y="309" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(147,197,253,0.7)">Weekly digest every Monday</text>
+      <text x="367" y="321" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(147,197,253,0.5)">Bot API · Unlimited · Free</text>
+
+      <!-- Input sources -->
+      <!-- Arrows going UP from inputs to agent -->
+      <line x1="180" y1="358" x2="180" y2="332" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowPurple)"/>
+      <line x1="400" y1="358" x2="400" y2="332" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowPurple)"/>
+      <!-- Up arrows from inputs to agent direct -->
+      <line x1="290" y1="358" x2="290" y2="240" stroke="rgba(124,58,237,0.35)" stroke-width="1" stroke-dasharray="2,3"/>
+
+      <!-- Input sources box -->
+      <rect x="90" y="332" width="400" height="42" rx="12" fill="url(#gInputs)" stroke="rgba(124,58,237,0.35)" stroke-width="1"/>
+      <text x="290" y="349" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#C4B5FD">INPUT SOURCES</text>
+      <text x="290" y="362" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6.5" fill="rgba(196,181,253,0.7)">ArXiv API (Free) · Semantic Scholar API (Free) · Competitor Institution Filter</text>
+
+    </svg>
+  </div>
+
+  <div class="page-footer">
+    <span>RADAR · Samsung PRISM 2026</span>
+    <span>Page 3</span>
+    <span>CONFIDENTIAL</span>
+  </div>
+</div>
+
+
+<!-- ========================================================
+     PAGE 4 — DATA FLOW + CORE COMPONENTS
+     ======================================================== -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-brand">RADAR</div>
+    <div class="page-header-meta">SECTION 03 — ARCHITECTURE (CONT.)</div>
+  </div>
+
+  <div class="subsection-title">Data Flow: Single Heartbeat Cycle</div>
+
+  <div class="diagram-wrapper">
+    <div class="diagram-title">⬡ HEARTBEAT CYCLE FLOWCHART</div>
+    <svg viewBox="0 0 580 290" class="flow-svg" style="max-height:290px;">
+      <defs>
+        <marker id="arrowW" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="rgba(148,163,184,0.7)"/>
+        </marker>
+        <marker id="arrowB2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#2563EB"/>
+        </marker>
+        <marker id="arrowC2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#06B6D4"/>
+        </marker>
+        <marker id="arrowR2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#EF4444"/>
+        </marker>
+        <marker id="arrowG2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#10B981"/>
+        </marker>
+      </defs>
+
+      <!-- START -->
+      <ellipse cx="72" cy="36" rx="58" ry="22" fill="rgba(37,99,235,0.3)" stroke="rgba(37,99,235,0.7)" stroke-width="1.5"/>
+      <text x="72" y="40" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#93C5FD">PaperFetcher</text>
+      <text x="72" y="50" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(147,197,253,0.7)">ArXiv + Sem. Scholar</text>
+
+      <!-- Arrow right -->
+      <line x1="132" y1="36" x2="195" y2="36" stroke="rgba(148,163,184,0.5)" stroke-width="1.5" marker-end="url(#arrowW)"/>
+
+      <!-- Diamond: competitor? -->
+      <polygon points="233,14 275,36 233,58 191,36" fill="rgba(245,158,11,0.15)" stroke="rgba(245,158,11,0.5)" stroke-width="1.5"/>
+      <text x="233" y="33" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="#FCD34D">Competitor</text>
+      <text x="233" y="43" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="#FCD34D">Paper?</text>
+
+      <!-- YES → down to ThreatDetector -->
+      <line x1="233" y1="58" x2="233" y2="110" stroke="rgba(239,68,68,0.6)" stroke-width="1.5" marker-end="url(#arrowR2)"/>
+      <text x="218" y="88" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#FCA5A5">YES</text>
+
+      <!-- NO → right to diamond 2 -->
+      <line x1="275" y1="36" x2="335" y2="36" stroke="rgba(148,163,184,0.5)" stroke-width="1.5" marker-end="url(#arrowW)"/>
+      <text x="307" y="30" font-family="JetBrains Mono,monospace" font-size="6.5" fill="rgba(148,163,184,0.8)">NO</text>
+
+      <!-- Diamond: repo match? -->
+      <polygon points="375,14 417,36 375,58 333,36" fill="rgba(6,182,212,0.12)" stroke="rgba(6,182,212,0.45)" stroke-width="1.5"/>
+      <text x="375" y="33" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="#67E8F9">Repo</text>
+      <text x="375" y="43" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="#67E8F9">Match?</text>
+
+      <!-- YES → down to OpportunityMatcher -->
+      <line x1="375" y1="58" x2="375" y2="110" stroke="rgba(6,182,212,0.6)" stroke-width="1.5" marker-end="url(#arrowC2)"/>
+      <text x="382" y="88" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#67E8F9">YES</text>
+
+      <!-- NO → right → discard -->
+      <line x1="417" y1="36" x2="470" y2="36" stroke="rgba(148,163,184,0.3)" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="437" y="30" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(100,120,160,0.6)">NO</text>
+      <rect x="468" y="22" width="68" height="28" rx="6" fill="rgba(255,255,255,0.04)" stroke="rgba(100,120,160,0.2)" stroke-width="1"/>
+      <text x="502" y="38" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(100,120,160,0.7)">Skip / Cache</text>
+
+      <!-- ThreatDetector box -->
+      <rect x="168" y="110" width="130" height="50" rx="10" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.4)" stroke-width="1.5"/>
+      <text x="233" y="131" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#FCA5A5">ThreatDetector</text>
+      <text x="233" y="143" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(252,165,165,0.7)">Semantic overlap scoring</text>
+      <text x="233" y="153" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(252,165,165,0.7)">vs. internal_briefs/</text>
+
+      <!-- OpportunityMatcher box -->
+      <rect x="310" y="110" width="130" height="50" rx="10" fill="rgba(6,182,212,0.12)" stroke="rgba(6,182,212,0.4)" stroke-width="1.5"/>
+      <text x="375" y="131" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#67E8F9">OpportunityMatcher</text>
+      <text x="375" y="143" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(103,232,249,0.7)">LLM relevance scoring</text>
+      <text x="375" y="153" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(103,232,249,0.7)">vs. repo_context/</text>
+
+      <!-- Threshold checks -->
+      <line x1="233" y1="160" x2="233" y2="200" stroke="rgba(239,68,68,0.5)" stroke-width="1.5" marker-end="url(#arrowR2)"/>
+      <line x1="375" y1="160" x2="375" y2="200" stroke="rgba(6,182,212,0.5)" stroke-width="1.5" marker-end="url(#arrowC2)"/>
+
+      <text x="210" y="185" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(252,165,165,0.7)">overlap &gt; threshold</text>
+      <text x="352" y="185" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(103,232,249,0.7)">relevance &gt; threshold</text>
+
+      <!-- Telegram output -->
+      <rect x="155" y="200" width="156" height="42" rx="10" fill="rgba(37,99,235,0.2)" stroke="rgba(37,99,235,0.4)" stroke-width="1.5"/>
+      <text x="233" y="218" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#93C5FD">📱 Telegram Alert</text>
+      <text x="233" y="230" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(147,197,253,0.7)">⚠ RADAR THREAT ALERT</text>
+      <text x="233" y="238" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(147,197,253,0.6)">Fired immediately</text>
+
+      <!-- GitHub output -->
+      <rect x="298" y="200" width="155" height="42" rx="10" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.4)" stroke-width="1.5"/>
+      <text x="375" y="218" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#6EE7B7">🐙 GitHub Issue</text>
+      <text x="375" y="230" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(110,231,183,0.7)">[RADAR] New paper relevant</text>
+      <text x="375" y="238" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(110,231,183,0.6)">to Issue #XX</text>
+
+      <!-- Weekly brief -->
+      <rect x="90" y="258" width="400" height="24" rx="8" fill="rgba(124,58,237,0.15)" stroke="rgba(124,58,237,0.35)" stroke-width="1"/>
+      <!-- arrows from outputs to weekly brief -->
+      <line x1="233" y1="242" x2="233" y2="258" stroke="rgba(37,99,235,0.4)" stroke-width="1" stroke-dasharray="2,2" marker-end="url(#arrowB2)"/>
+      <line x1="375" y1="242" x2="375" y2="258" stroke="rgba(16,185,129,0.4)" stroke-width="1" stroke-dasharray="2,2" marker-end="url(#arrowG2)"/>
+      <text x="290" y="272" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#C4B5FD">📡 Weekly Research Brief → Telegram (Every Monday 7:30 AM)</text>
+    </svg>
+  </div>
+
+  <div class="subsection-title">Core Component Breakdown</div>
+  <div class="skill-grid">
+    <div class="skill-card" data-num="SKILL 01">
+      <div class="skill-name">PaperFetcher</div>
+      <div class="skill-desc">Queries ArXiv API daily for topic-tagged papers. Queries Semantic Scholar filtering by competitor affiliation. Deduplicates, normalizes and caches metadata.</div>
+    </div>
+    <div class="skill-card" data-num="SKILL 02">
+      <div class="skill-name">OpportunityMatcher</div>
+      <div class="skill-desc">R2R Mode. LLM compares abstracts against repo_context files. Generates relevance score + reason. Creates GitHub issue when threshold exceeded.</div>
+    </div>
+    <div class="skill-card" data-num="SKILL 03">
+      <div class="skill-name">ThreatDetector</div>
+      <div class="skill-desc">SIGNAL Mode. Compares competitor papers against internal_briefs. Computes semantic overlap score. Fires Telegram alert when overlap > threshold.</div>
+    </div>
+    <div class="skill-card" data-num="SKILL 04">
+      <div class="skill-name">OutputDispatcher</div>
+      <div class="skill-desc">GitHub Issue Creator via REST API. Telegram Alerter via Bot API. WeeklyBriefComposer aggregates week's findings into a single digest message.</div>
+    </div>
+    <div class="skill-card" data-num="SKILL 05">
+      <div class="skill-name">WeeklyBriefComposer</div>
+      <div class="skill-desc">Aggregates all weekly findings. Formats structured Telegram digest including all opportunities, threats, and stats. Sends every Monday 7:30 AM.</div>
+    </div>
+    <div class="skill-card" data-num="MEMORY">
+      <div class="skill-name">Persistent Memory</div>
+      <div class="skill-desc">Markdown/YAML files stored locally in ~/.openclaw/radar/. Three categories: repo_context/, internal_briefs/, competitor_profiles/.</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>RADAR · Samsung PRISM 2026</span>
+    <span>Page 4</span>
+    <span>CONFIDENTIAL</span>
+  </div>
+</div>
+
+
+<!-- ========================================================
+     PAGE 5 — ADVANCED FEATURES (UPGRADES)
+     ======================================================== -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-brand">RADAR</div>
+    <div class="page-header-meta">SECTION 04 — ADVANCED CAPABILITIES</div>
+  </div>
+
+  <div class="section-number">Section 04 ─────────────────────</div>
+  <div class="section-title">Advanced <span>Capabilities</span> — Upgrades That Matter</div>
+
+  <p>Beyond the core pipeline, RADAR implements five differentiated capabilities that elevate it from a research scraper to a true AI research intelligence system. These upgrades are what make RADAR stand apart from any competing submission.</p>
+
+  <div class="upgrade-grid">
+    <!-- Upgrade 1 -->
+    <div class="upgrade-card uc1">
+      <div class="upgrade-num">1</div>
+      <div class="upgrade-icon">🕸️</div>
+      <div class="upgrade-title">Living Codebase Graph (vs. Static README)</div>
+      <div class="upgrade-body">
+        RADAR reads the <em>actual codebase</em> — extracting architecture patterns, active TODOs, open PRs, and function signatures — then auto-generates repo context embeddings. The system knows your project better than the README does. Matching is against living code, not a stale summary.
+      </div>
+      <div class="upgrade-tech-tags">
+        <span class="tech-tag tt-blue">AST parsing</span>
+        <span class="tech-tag tt-cyan">embeddings</span>
+        <span class="tech-tag tt-emerald">git diff</span>
+        <span class="tech-tag tt-purple">ChromaDB</span>
+      </div>
+    </div>
+
+    <!-- Upgrade 2 -->
+    <div class="upgrade-card uc2">
+      <div class="upgrade-num">2</div>
+      <div class="upgrade-icon">🔗</div>
+      <div class="upgrade-title">Citation Tracing — The "So What" Layer</div>
+      <div class="upgrade-body">
+        When a paper matches a repo, RADAR traces which <em>specific functions or modules</em> in the codebase it's relevant to. <br/><br/>
+        <em>"This paper on quantization is relevant to model_compression.py → quantize_weights()"</em><br/><br/>
+        This is 10× more actionable than "this paper is relevant to your project."
+      </div>
+      <div class="upgrade-tech-tags">
+        <span class="tech-tag tt-cyan">function-level matching</span>
+        <span class="tech-tag tt-purple">LLM reasoning</span>
+      </div>
+    </div>
+
+    <!-- Upgrade 3 -->
+    <div class="upgrade-card uc3">
+      <div class="upgrade-num">3</div>
+      <div class="upgrade-icon">⚖️</div>
+      <div class="upgrade-title">Patent Proximity Scoring for Threat Detector</div>
+      <div class="upgrade-body">
+        After detecting a semantic threat, RADAR queries <strong>Google Patents / Lens.org</strong> to check whether the overlapping concepts are already filed as patents. This directly addresses the IP protection angle — and no other team will think of this.
+      </div>
+      <div class="upgrade-tech-tags">
+        <span class="tech-tag tt-amber">Google Patents API</span>
+        <span class="tech-tag tt-red">Lens.org</span>
+        <span class="tech-tag tt-blue">patent scoring</span>
+      </div>
+    </div>
+
+    <!-- Upgrade 4 -->
+    <div class="upgrade-card uc4">
+      <div class="upgrade-num">4</div>
+      <div class="upgrade-icon">📈</div>
+      <div class="upgrade-title">Research Momentum Signals</div>
+      <div class="upgrade-body">
+        Instead of per-paper alerting, a weekly trend layer detects when a <em>cluster of papers from multiple institutions</em> converges on a direction your team is working in. Strategic-level intelligence: <br/><em>"3 papers from Google Brain, MIT &amp; Stanford in 10 days all tackle on-device multimodal compression."</em>
+      </div>
+      <div class="upgrade-tech-tags">
+        <span class="tech-tag tt-emerald">clustering</span>
+        <span class="tech-tag tt-cyan">topic modeling</span>
+        <span class="tech-tag tt-purple">trend analysis</span>
+      </div>
+    </div>
+
+    <!-- Upgrade 5 -->
+    <div class="upgrade-card uc5" style="grid-column: span 2;">
+      <div class="upgrade-num">5</div>
+      <div class="upgrade-icon">🔄</div>
+      <div class="upgrade-title">The Feedback Loop — System That Learns Over Time</div>
+      <div class="upgrade-body" style="columns:2;gap:20px;">
+        <span>
+          RADAR currently fires and forgets. The Feedback Loop adds a reaction mechanism: when an engineer opens a RADAR GitHub issue and <em>links it to a PR</em>, RADAR learns this type of match was useful. When they close it as "not relevant," it learns the opposite.
+          <br/><br/>
+          After 30 days, the system has <strong>calibrated relevance scoring tuned to your specific team</strong>. No other hackathon project has this self-improvement loop.
+        </span>
+      </div>
+      <div class="upgrade-tech-tags">
+        <span class="tech-tag tt-blue">GitHub webhook</span>
+        <span class="tech-tag tt-purple">reinforcement signal</span>
+        <span class="tech-tag tt-emerald">relevance calibration</span>
+        <span class="tech-tag tt-cyan">30-day learning window</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>RADAR · Samsung PRISM 2026</span>
+    <span>Page 5</span>
+    <span>CONFIDENTIAL</span>
+  </div>
+</div>
+
+
+<!-- ========================================================
+     PAGE 6 — RESEARCH TREND DETECTION SHOWCASE
+     ======================================================== -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-brand">RADAR</div>
+    <div class="page-header-meta">SECTION 04 — TREND DETECTION FEATURE</div>
+  </div>
+
+  <div class="subsection-title">Feature Spotlight: Research Trend Detection</div>
+  <p>RADAR's most powerful differentiator is its ability to detect <strong>emerging research directions</strong> — not just individual papers. This transforms RADAR from a notification tool into an AI foresight system.</p>
+
+  <!-- Trend Detection Flow -->
+  <div class="diagram-wrapper">
+    <div class="diagram-title">⬡ RESEARCH TREND DETECTION PIPELINE</div>
+    <svg viewBox="0 0 580 120" class="flow-svg" style="max-height:120px;">
+      <defs>
+        <marker id="arrowT" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L7,3 z" fill="#10B981"/>
+        </marker>
+      </defs>
+
+      <!-- Step boxes -->
+      <rect x="10" y="30" width="90" height="58" rx="10" fill="rgba(37,99,235,0.15)" stroke="rgba(37,99,235,0.4)" stroke-width="1.5"/>
+      <text x="55" y="54" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" font-weight="700" fill="#93C5FD">RADAR Scans</text>
+      <text x="55" y="66" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(147,197,253,0.7)">Daily papers</text>
+      <text x="55" y="78" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(147,197,253,0.7)">from all sources</text>
+
+      <line x1="100" y1="59" x2="130" y2="59" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrowT)"/>
+
+      <rect x="130" y="30" width="90" height="58" rx="10" fill="rgba(6,182,212,0.12)" stroke="rgba(6,182,212,0.4)" stroke-width="1.5"/>
+      <text x="175" y="50" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" font-weight="700" fill="#67E8F9">Embed +</text>
+      <text x="175" y="62" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" font-weight="700" fill="#67E8F9">Cluster</text>
+      <text x="175" y="76" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(103,232,249,0.7)">sentence-transformers</text>
+
+      <line x1="220" y1="59" x2="250" y2="59" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrowT)"/>
+
+      <rect x="250" y="30" width="90" height="58" rx="10" fill="rgba(124,58,237,0.12)" stroke="rgba(124,58,237,0.4)" stroke-width="1.5"/>
+      <text x="295" y="50" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" font-weight="700" fill="#C4B5FD">Detect</text>
+      <text x="295" y="62" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" font-weight="700" fill="#C4B5FD">Convergence</text>
+      <text x="295" y="76" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(196,181,253,0.7)">multi-institution spike</text>
+
+      <line x1="340" y1="59" x2="370" y2="59" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrowT)"/>
+
+      <rect x="370" y="30" width="90" height="58" rx="10" fill="rgba(245,158,11,0.12)" stroke="rgba(245,158,11,0.4)" stroke-width="1.5"/>
+      <text x="415" y="50" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" font-weight="700" fill="#FCD34D">Score &amp;</text>
+      <text x="415" y="62" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" font-weight="700" fill="#FCD34D">Rank Trend</text>
+      <text x="415" y="76" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(252,211,77,0.7)">keyword frequency</text>
+
+      <line x1="460" y1="59" x2="490" y2="59" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrowT)"/>
+
+      <rect x="490" y="30" width="88" height="58" rx="10" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.4)" stroke-width="1.5"/>
+      <text x="534" y="50" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" font-weight="700" fill="#6EE7B7">Dispatch</text>
+      <text x="534" y="62" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" font-weight="700" fill="#6EE7B7">Insight</text>
+      <text x="534" y="76" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="rgba(110,231,183,0.7)">Telegram + GitHub</text>
+
+      <!-- Labels below -->
+      <text x="55" y="100" text-anchor="middle" font-size="6" fill="rgba(100,120,160,0.7)" font-family="JetBrains Mono,monospace">STEP 1</text>
+      <text x="175" y="100" text-anchor="middle" font-size="6" fill="rgba(100,120,160,0.7)" font-family="JetBrains Mono,monospace">STEP 2</text>
+      <text x="295" y="100" text-anchor="middle" font-size="6" fill="rgba(100,120,160,0.7)" font-family="JetBrains Mono,monospace">STEP 3</text>
+      <text x="415" y="100" text-anchor="middle" font-size="6" fill="rgba(100,120,160,0.7)" font-family="JetBrains Mono,monospace">STEP 4</text>
+      <text x="534" y="100" text-anchor="middle" font-size="6" fill="rgba(100,120,160,0.7)" font-family="JetBrains Mono,monospace">STEP 5</text>
+    </svg>
+  </div>
+
+  <!-- Live example output -->
+  <div class="trend-showcase">
+    <div class="trend-header">
+      <div class="trend-badge"><span style="width:7px;height:7px;background:#10B981;border-radius:50%;display:inline-block;box-shadow:0 0 6px #10B981;"></span> TREND DETECTED</div>
+      <div class="trend-name">On-Device Diffusion Models</div>
+    </div>
+
+    <div class="trend-stats">
+      <div class="trend-stat-item">
+        <div class="trend-stat-val">17</div>
+        <div class="trend-stat-lbl">New papers in last 14 days</div>
+      </div>
+      <div class="trend-stat-item">
+        <div class="trend-stat-val">3</div>
+        <div class="trend-stat-lbl">Top-tier institutions converging</div>
+      </div>
+      <div class="trend-stat-item">
+        <div class="trend-stat-val">↑94%</div>
+        <div class="trend-stat-lbl">Topic velocity vs. 30-day avg</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;font-size:7.5pt;">
+      <span style="background:rgba(37,99,235,0.2);border:1px solid rgba(37,99,235,0.35);border-radius:5px;padding:3px 10px;color:#93C5FD;font-family:'JetBrains Mono',monospace;">Google Brain</span>
+      <span style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.35);border-radius:5px;padding:3px 10px;color:#C4B5FD;font-family:'JetBrains Mono',monospace;">Meta AI</span>
+      <span style="background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.3);border-radius:5px;padding:3px 10px;color:#67E8F9;font-family:'JetBrains Mono',monospace;">MIT CSAIL</span>
+    </div>
+
+    <div class="trend-implication">
+      <strong>📊 IMPLICATION</strong>
+      Edge generative models are becoming feasible on mobile NPUs. Lightweight diffusion model inference is transitioning from research novelty to engineering reality. This is a strategic inflection point.
+    </div>
+
+    <div class="trend-recommendation">
+      <strong>🎯 RECOMMENDATION FOR SAMSUNG</strong>
+      Evaluate lightweight diffusion models for the Samsung Galaxy AI pipeline. Assess NPU compatibility for Galaxy S-series and A-series devices. Consider fast-tracking a prototype benchmark within the next sprint.
+    </div>
+  </div>
+
+  <!-- Experiment Suggestion Card -->
+  <div class="subsection-title">Feature: Experiment Suggestion Engine</div>
+  <p>When a paper matches a repo, RADAR doesn't just surface it — it generates a <strong>concrete experiment suggestion</strong> tied to your actual codebase.</p>
+
+  <div class="experiment-card">
+    <div class="experiment-header">⚗ SUGGESTED EXPERIMENT — Auto-Generated by RADAR</div>
+    <div class="experiment-row">
+      <div class="exp-label">Paper:</div>
+      <div class="exp-value" style="color:#93C5FD;">Adaptive Quantization for On-Device Transformer Models</div>
+    </div>
+    <div class="experiment-row">
+      <div class="exp-label">Your Repo:</div>
+      <div class="exp-value"><code>model-compression</code> → <code>quantize_weights()</code></div>
+    </div>
+    <div class="experiment-row">
+      <div class="exp-label">Suggestion:</div>
+      <div class="exp-value">Test adaptive quantization on your MobileNet pipeline using Galaxy A-series NPU benchmark. Replace static int8 quantization with dynamic precision switching based on layer sensitivity scores.</div>
+    </div>
+    <div class="exp-benefit">
+      <div class="exp-benefit-label">Expected Benefit</div>
+      <div class="exp-benefit-value">~20–30% RAM reduction</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>RADAR · Samsung PRISM 2026</span>
+    <span>Page 6</span>
+    <span>CONFIDENTIAL</span>
+  </div>
+</div>
+
+
+<!-- ========================================================
+     PAGE 7 — USER STORIES
+     ======================================================== -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-brand">RADAR</div>
+    <div class="page-header-meta">SECTION 05 — USER STORIES</div>
+  </div>
+
+  <div class="section-number">Section 05 ─────────────────────</div>
+  <div class="section-title">User <span>Stories</span></div>
+
+  <p>RADAR serves distinct user personas within a Samsung Research organization, each with specific needs addressed by the system's dual-mode intelligence.</p>
+
+  <div class="split-2" style="gap:12px;margin:16px 0;">
+    <!-- Story 1 -->
+    <div style="background:linear-gradient(135deg,rgba(10,14,26,0.9),rgba(15,22,41,0.85));border:1px solid rgba(37,99,235,0.25);border-radius:12px;padding:16px;border-top:3px solid #2563EB;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:36px;height:36px;background:rgba(37,99,235,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">👩‍💻</div>
+        <div>
+          <div style="font-size:9pt;font-weight:700;color:#93C5FD;">The Research Engineer</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:6.5pt;color:var(--text-muted);">On-Device Model Optimization Team</div>
+        </div>
+      </div>
+      <div style="background:rgba(37,99,235,0.08);border-radius:8px;padding:10px 12px;font-size:8.5pt;color:var(--text-secondary);line-height:1.6;font-style:italic;">
+        "As a Samsung Research engineer working on on-device model optimization, I want RADAR to automatically surface ArXiv papers that address my open GitHub issues, so that I discover relevant research instantly instead of missing it for months."
+      </div>
+      <div style="margin-top:10px;">
+        <span class="label-chip lc-mode-r2r">R2R Mode</span>
+        <span class="badge badge-blue" style="margin-left:6px;">GitHub Issues</span>
+      </div>
+    </div>
+
+    <!-- Story 2 -->
+    <div style="background:linear-gradient(135deg,rgba(10,14,26,0.9),rgba(15,22,41,0.85));border:1px solid rgba(239,68,68,0.25);border-radius:12px;padding:16px;border-top:3px solid #EF4444;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:36px;height:36px;background:rgba(239,68,68,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🎯</div>
+        <div>
+          <div style="font-size:9pt;font-weight:700;color:#FCA5A5;">The Research Team Lead</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:6.5pt;color:var(--text-muted);">Samsung Research Branch B</div>
+        </div>
+      </div>
+      <div style="background:rgba(239,68,68,0.07);border-radius:8px;padding:10px 12px;font-size:8.5pt;color:var(--text-secondary);line-height:1.6;font-style:italic;">
+        "As a research team lead at SR-B, I want to be alerted the moment Google Brain or Qualcomm publishes a paper overlapping our internal project brief, so that I can expedite our internal review and protect our competitive position."
+      </div>
+      <div style="margin-top:10px;">
+        <span class="label-chip lc-mode-sig">SIGNAL Mode</span>
+        <span class="badge badge-red" style="margin-left:6px;">Telegram Alert</span>
+      </div>
+    </div>
+
+    <!-- Story 3 -->
+    <div style="background:linear-gradient(135deg,rgba(10,14,26,0.9),rgba(15,22,41,0.85));border:1px solid rgba(124,58,237,0.25);border-radius:12px;padding:16px;border-top:3px solid #7C3AED;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:36px;height:36px;background:rgba(124,58,237,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">📊</div>
+        <div>
+          <div style="font-size:9pt;font-weight:700;color:#C4B5FD;">The Engineering Manager</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:6.5pt;color:var(--text-muted);">Research Program Manager</div>
+        </div>
+      </div>
+      <div style="background:rgba(124,58,237,0.07);border-radius:8px;padding:10px 12px;font-size:8.5pt;color:var(--text-secondary);line-height:1.6;font-style:italic;">
+        "As an engineering manager, I want a unified weekly research brief delivered every Monday morning, so that my team starts the week aware of both opportunities to exploit and threats to address."
+      </div>
+      <div style="margin-top:10px;">
+        <span class="badge badge-purple">Weekly Brief</span>
+        <span class="badge badge-cyan" style="margin-left:6px;">Monday 7:30 AM</span>
+      </div>
+    </div>
+
+    <!-- Story 4 -->
+    <div style="background:linear-gradient(135deg,rgba(10,14,26,0.9),rgba(15,22,41,0.85));border:1px solid rgba(16,185,129,0.25);border-radius:12px;padding:16px;border-top:3px solid #10B981;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:36px;height:36px;background:rgba(16,185,129,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🌱</div>
+        <div>
+          <div style="font-size:9pt;font-weight:700;color:#6EE7B7;">The New Team Member</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:6.5pt;color:var(--text-muted);">Onboarding Engineer</div>
+        </div>
+      </div>
+      <div style="background:rgba(16,185,129,0.06);border-radius:8px;padding:10px 12px;font-size:8.5pt;color:var(--text-secondary);line-height:1.6;font-style:italic;">
+        "As a new engineer joining a research project, I want RADAR's GitHub issues to show me which recent papers the team has already identified as relevant, so that I can quickly understand the research landscape around my work."
+      </div>
+      <div style="margin-top:10px;">
+        <span class="label-chip lc-mode-trend">Trend Mode</span>
+        <span class="badge badge-emerald" style="margin-left:6px;">GitHub History</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>RADAR · Samsung PRISM 2026</span>
+    <span>Page 7</span>
+    <span>CONFIDENTIAL</span>
+  </div>
+</div>
+
+
+<!-- ========================================================
+     PAGE 8 — USER JOURNEYS
+     ======================================================== -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-brand">RADAR</div>
+    <div class="page-header-meta">SECTION 06 — USER JOURNEYS</div>
+  </div>
+
+  <div class="section-number">Section 06 ─────────────────────</div>
+  <div class="section-title">User <span>Journeys</span></div>
+
+  <!-- Journey 1 -->
+  <div class="journey-card journey-blue">
+    <div class="journey-trigger">
+      <div class="journey-trigger-icon" style="background:rgba(37,99,235,0.15);">📄</div>
+      <div class="journey-trigger-text">
+        <div class="label">TRIGGER — JOURNEY 1 · R2R MODE · OPPORTUNITY DISCOVERY</div>
+        <div class="value">"Efficient On-Device Inference via Adaptive Quantization for Resource-Constrained Devices" — Published on ArXiv</div>
+      </div>
+    </div>
+
+    <div class="journey-steps">
+      <div class="journey-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-action">PaperFetcher ingests abstract + metadata</div>
+          <div class="step-detail">Pulls from ArXiv API · Deduplicates · Caches metadata locally in ChromaDB</div>
+        </div>
+      </div>
+      <div class="journey-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-action">OpportunityMatcher compares against repo_context/model_compression.md</div>
+          <div class="step-detail">Gemini 1.5 Flash scores relevance against repo goals, open issues, benchmarks · Score: 86%</div>
+        </div>
+      </div>
+      <div class="journey-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-action">Match found — reason generated</div>
+          <div class="step-detail">"Addresses memory efficiency on mid-tier devices — directly relevant to Issue #42 (RAM pressure on Galaxy A-series)"</div>
+        </div>
+      </div>
+      <div class="journey-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-action">GitHub issue auto-created by OutputDispatcher</div>
+          <div class="step-detail">Structured issue with paper link, relevance reason, and suggested experiment</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="output-box">
+      <div class="out-label">📋 Generated GitHub Issue</div>
+      [RADAR] New paper relevant to Issue #42<br/>
+      <br/>
+      Paper: Efficient On-Device Inference via Adaptive Quantization...<br/>
+      Link: arxiv.org/abs/2026.XXXXX<br/>
+      <br/>
+      Why relevant: Addresses adaptive quantization for memory-constrained<br/>
+      inference — matches your open issue on RAM pressure for mid-tier<br/>
+      Galaxy A-series devices.<br/>
+      <br/>
+      Suggested action: Run benchmark experiment against current pipeline<br/>
+      on Galaxy A55. Expected improvement: ~20–30% RAM reduction.
+    </div>
+  </div>
+
+  <!-- Journey 2 -->
+  <div class="journey-card journey-red">
+    <div class="journey-trigger">
+      <div class="journey-trigger-icon" style="background:rgba(239,68,68,0.15);">⚠️</div>
+      <div class="journey-trigger-text">
+        <div class="label">TRIGGER — JOURNEY 2 · SIGNAL MODE · THREAT DETECTION</div>
+        <div class="value">"Multimodal Context Fusion for On-Device Vision-Language Understanding" — Google Brain (Semantic Scholar detects affiliation)</div>
+      </div>
+    </div>
+
+    <div class="journey-steps">
+      <div class="journey-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-action">PaperFetcher flags as competitor paper (Google Brain affiliation)</div>
+          <div class="step-detail">Author affiliation matched against competitor_profiles/google_brain.yaml</div>
+        </div>
+      </div>
+      <div class="journey-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-action">ThreatDetector compares against internal_briefs/project_orion.md</div>
+          <div class="step-detail">Semantic overlap computed via sentence-transformers + Gemini reasoning layer</div>
+        </div>
+      </div>
+      <div class="journey-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-action">Overlap score: 74% · 3 overlapping claims detected</div>
+          <div class="step-detail">Cross-modal attention · On-device memory optimization · &lt;150ms NPU benchmark target</div>
+        </div>
+      </div>
+      <div class="journey-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-action">Telegram alert fires immediately — team lead notified within minutes</div>
+          <div class="step-detail">Emergency review called · Patent timeline expedited</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="output-box">
+      <div class="out-label">⚠ Telegram Threat Alert (Fired at 1:23 AM)</div>
+      ⚠ RADAR THREAT ALERT<br/>
+      Institution: Google Brain | Published: 6 hours ago<br/>
+      Paper: Multimodal Context Fusion for On-Device VLU<br/>
+      <br/>
+      Overlap with: Project Orion (internal brief)<br/>
+      Similarity score: 74% | 3 overlapping claims<br/>
+        • Cross-modal attention mechanism<br/>
+        • On-device memory optimization approach<br/>
+        • Benchmark target: &lt;150ms on mobile NPU<br/>
+      <br/>
+      Recommended action: Expedite internal review before filing<br/>
+      related patent claims. Time saved: weeks of delayed discovery.
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>RADAR · Samsung PRISM 2026</span>
+    <span>Page 8</span>
+    <span>CONFIDENTIAL</span>
+  </div>
+</div>
+
+
+<!-- ========================================================
+     PAGE 9 — WEEKLY BRIEF + TIMELINE
+     ======================================================== -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-brand">RADAR</div>
+    <div class="page-header-meta">SECTIONS 06–07 — BRIEF & TIMELINE</div>
+  </div>
+
+  <!-- Journey 3 - Weekly Brief -->
+  <div class="journey-card journey-green" style="margin-top:0;">
+    <div class="journey-trigger">
+      <div class="journey-trigger-icon" style="background:rgba(16,185,129,0.12);">📡</div>
+      <div class="journey-trigger-text">
+        <div class="label">TRIGGER — JOURNEY 3 · WEEKLY DIGEST · EVERY MONDAY 7:30 AM</div>
+        <div class="value">Automated aggregation of all week's opportunities, threats, and research momentum signals</div>
+      </div>
+    </div>
+
+    <div class="output-box">
+      <div class="out-label">📡 RADAR Weekly Brief — Week of April 28</div>
+      🚀 OPPORTUNITIES (4 this week)<br/>
+      <br/>
+      1. [Paper A] → Issue #42, repo: model-compress<br/>
+         "Try adaptive quantization approach"<br/>
+      2. [Paper B] → Benchmark gap in repo: inference<br/>
+         "New SOTA on mobile NPU — test against yours"<br/>
+      3. [Paper C] → Matches open question in notes<br/>
+         "Addresses your data-scarce training problem"<br/>
+      4. [Paper D] → Architecture assumption in repo<br/>
+         "Challenges your transformer baseline choice"<br/>
+      <br/>
+      ⚠ THREATS (1 this week)<br/>
+      1. Google Brain — 74% overlap with Project Orion<br/>
+         [Alert sent Monday 1:23am — action taken ✅]<br/>
+      <br/>
+      📈 TREND ALERT: On-Device Diffusion Models<br/>
+         17 papers / 3 institutions / +94% velocity<br/>
+      <br/>
+      📊 Stats: 847 papers scanned | 4 opportunities<br/>
+               12 competitor papers | 1 threat detected
+    </div>
+  </div>
+
+  <div class="spacer-sm"></div>
+
+  <!-- Section 7: Timeline -->
+  <div class="section-number">Section 07 ─────────────────────</div>
+  <div class="section-title">Development <span>Timeline</span></div>
+  <p style="margin-bottom:14px;">Phase 2 implementation plan spans 8 focused days from May 1–8, 2026. Each day has a single clear deliverable, enabling incremental validation.</p>
+
+  <div style="margin:0 0 16px 0;">
+    <div class="timeline-item">
+      <div class="timeline-day"><div class="timeline-day-num">D1</div><div class="timeline-day-date">May 1</div></div>
+      <div class="timeline-content"><div class="timeline-task">OpenClaw setup · Environment config · Telegram bot initialization</div><div class="timeline-output">→ Running OpenClaw instance + bot responds on Telegram</div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-day"><div class="timeline-day-num">D2</div><div class="timeline-day-date">May 2</div></div>
+      <div class="timeline-content"><div class="timeline-task">ArXiv API integration + PaperFetcher skill</div><div class="timeline-output">→ Agent fetches papers by topic tag on heartbeat</div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-day"><div class="timeline-day-num">D3</div><div class="timeline-day-date">May 3</div></div>
+      <div class="timeline-content"><div class="timeline-task">Semantic Scholar API + competitor profile filtering</div><div class="timeline-output">→ Papers from Google Brain, Qualcomm AI detected</div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-day"><div class="timeline-day-num">D4</div><div class="timeline-day-date">May 4</div></div>
+      <div class="timeline-content"><div class="timeline-task">GitHub API integration — repo reader + issue creator <span class="badge badge-emerald" style="margin-left:6px;font-size:7pt;">MILESTONE</span></div><div class="timeline-output">→ Agent reads repo issues + creates test GitHub issue</div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-day"><div class="timeline-day-num">D5</div><div class="timeline-day-date">May 5</div></div>
+      <div class="timeline-content"><div class="timeline-task">OpportunityMatcher skill — LLM relevance scoring</div><div class="timeline-output">→ Agent matches paper to repo context, creates issue</div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-day"><div class="timeline-day-num">D6</div><div class="timeline-day-date">May 6</div></div>
+      <div class="timeline-content"><div class="timeline-task">ThreatDetector skill — semantic overlap with internal briefs <span class="badge badge-emerald" style="margin-left:6px;font-size:7pt;">MILESTONE</span></div><div class="timeline-output">→ Threat alert fires on Telegram correctly</div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-day"><div class="timeline-day-num">D7</div><div class="timeline-day-date">May 7</div></div>
+      <div class="timeline-content"><div class="timeline-task">Weekly Brief composer + end-to-end integration testing</div><div class="timeline-output">→ Full pipeline working: paper → issue/alert → brief</div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-day" style="background:linear-gradient(135deg,rgba(16,185,129,0.3),rgba(6,182,212,0.2));border-color:rgba(16,185,129,0.5);"><div class="timeline-day-num" style="color:#34D399;">D8</div><div class="timeline-day-date">May 8</div></div>
+      <div class="timeline-content" style="border-color:rgba(16,185,129,0.3);"><div class="timeline-task" style="color:#6EE7B7;">Demo prep · Edge case handling · Documentation · GitHub cleanup <span class="badge badge-emerald" style="margin-left:6px;font-size:7pt;">SUBMISSION</span></div><div class="timeline-output">→ Submission-ready</div></div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>RADAR · Samsung PRISM 2026</span>
+    <span>Page 9</span>
+    <span>CONFIDENTIAL</span>
+  </div>
+</div>
+
+
+<!-- ========================================================
+     PAGE 10 — COMPONENTS + DEPENDENCIES
+     ======================================================== -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-brand">RADAR</div>
+    <div class="page-header-meta">SECTIONS 08–09 — COMPONENTS & DEPENDENCIES</div>
+  </div>
+
+  <div class="section-number">Section 08 ─────────────────────</div>
+  <div class="section-title">Components <span>Used</span></div>
+
+  <div class="callout callout-blue">
+    <div class="callout-title">🔒 OpenClaw Variant: NomaClaw</div>
+    <p>The sandboxed, secure variant of OpenClaw with <strong>NVIDIA NemoGuard integration</strong> — chosen specifically for safe execution in a research environment where internal project briefs are sensitive. NomaClaw prevents exfiltration of any memory content, ensuring classified research stays local.</p>
+  </div>
+
+  <div class="subsection-title" style="margin-top:16px;">Libraries & Runtime</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Library / Platform</th>
+        <th>Purpose</th>
+        <th>Category</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>openclaw</code> / <code>nomaclaw</code></td><td>Core agent framework — skills, memory, ReAct loop</td><td><span class="badge badge-blue">Core</span></td></tr>
+      <tr><td><code>arxiv</code> (PyPI)</td><td>ArXiv paper fetching — topic-tagged daily queries</td><td><span class="badge badge-cyan">Data</span></td></tr>
+      <tr><td><code>semanticscholar</code></td><td>Semantic Scholar API — author affiliation filtering</td><td><span class="badge badge-cyan">Data</span></td></tr>
+      <tr><td><code>PyGithub</code></td><td>GitHub REST API — read repos, create issues</td><td><span class="badge badge-emerald">Output</span></td></tr>
+      <tr><td><code>python-telegram-bot</code></td><td>Telegram Bot API — alerts + weekly brief</td><td><span class="badge badge-emerald">Output</span></td></tr>
+      <tr><td><code>chromadb</code></td><td>Local vector store for semantic similarity matching</td><td><span class="badge badge-purple">AI</span></td></tr>
+      <tr><td><code>sentence-transformers</code></td><td>Local embeddings — free, on-device inference</td><td><span class="badge badge-purple">AI</span></td></tr>
+      <tr><td><code>google-generativeai</code></td><td>Gemini 1.5 Flash — LLM reasoning layer</td><td><span class="badge badge-purple">AI</span></td></tr>
+      <tr><td><code>pyyaml</code> / <code>schedule</code></td><td>Config parsing + heartbeat scheduling</td><td><span class="badge badge-amber">Infra</span></td></tr>
+      <tr><td>Python 3.11</td><td>Implementation language</td><td><span class="badge badge-amber">Runtime</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="spacer-sm"></div>
+
+  <div class="section-number">Section 09 ─────────────────────</div>
+  <div class="section-title"><span>Dependencies</span> & Requirements</div>
+
+  <div class="subsection-title">API Requirements</div>
+
+  <table>
+    <thead>
+      <tr><th>API</th><th>Cost</th><th>Rate Limit</th><th>Usage in RADAR</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>ArXiv API</td><td><span class="badge badge-free">Free</span></td><td>No official limit (respectful polling)</td><td>Daily paper fetching by topic tag</td></tr>
+      <tr><td>Semantic Scholar API</td><td><span class="badge badge-free">Free</span></td><td>100 req/5min (unauthenticated)</td><td>Paper + competitor author data</td></tr>
+      <tr><td>GitHub REST API</td><td><span class="badge badge-free">Free</span></td><td>5,000 req/hour (authenticated)</td><td>Repo reader + issue creator</td></tr>
+      <tr><td>Telegram Bot API</td><td><span class="badge badge-free">Free</span></td><td>No practical limit</td><td>Alerts + weekly brief delivery</td></tr>
+      <tr><td>Gemini 1.5 Flash API</td><td><span class="badge badge-free">Free tier</span></td><td>15 req/min · 1M tokens/month</td><td>Relevance + overlap scoring</td></tr>
+      <tr><td style="color:#6EE7B7;font-weight:800;">Total API Cost</td><td colspan="3" style="color:#6EE7B7;font-weight:700;font-size:10pt;">₹ 0 / day</td></tr>
+    </tbody>
+  </table>
+
+  <div class="subsection-title">Compute Requirements</div>
+
+  <div class="split-2">
+    <table>
+      <thead><tr><th>Component</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td>Hardware</td><td>Standard laptop (8GB RAM min.)</td></tr>
+        <tr><td>GPU</td><td><span class="badge badge-emerald">Not required</span></td></tr>
+        <tr><td>Storage</td><td>~500MB (OpenClaw + vector store)</td></tr>
+        <tr><td>Cloud</td><td><span class="badge badge-emerald">Not required</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-emerald">
+      <div class="callout-title">💡 Zero-Cloud Design</div>
+      <p>RADAR runs entirely self-hosted. All inference via free API tiers. No cloud subscription needed. Fully operational on a standard research laptop — zero infrastructure cost for Samsung PRISM evaluation.</p>
+    </div>
+  </div>
+
+  <div style="background:rgba(5,10,22,0.9);border:1px solid rgba(6,182,212,0.2);border-radius:10px;padding:16px;margin-top:14px;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:7.5pt;color:var(--accent-cyan);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">⌨ Quick Start — Environment Setup</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:8pt;color:var(--gray-200);line-height:1.9;">
+      <span style="color:#7C3AED;"># Install OpenClaw (NomaClaw variant)</span><br/>
+      pip install openclaw nomaclaw<br/>
+      <br/>
+      <span style="color:#7C3AED;"># Install project dependencies</span><br/>
+      pip install arxiv semanticscholar PyGithub python-telegram-bot<br/>
+      pip install chromadb sentence-transformers google-generativeai<br/>
+      <br/>
+      <span style="color:#7C3AED;"># Initialize RADAR agent</span><br/>
+      openclaw init radar-agent --variant nomaclaw
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>RADAR · Samsung PRISM 2026</span>
+    <span>Page 10</span>
+    <span>CONFIDENTIAL</span>
+  </div>
+</div>
+
+
+<!-- ========================================================
+     PAGE 11 — WHY RADAR WINS + CLOSING
+     ======================================================== -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-brand">RADAR</div>
+    <div class="page-header-meta">SECTION 10 — EVALUATION & CLOSING</div>
+  </div>
+
+  <div class="section-number">Section 10 ─────────────────────</div>
+  <div class="section-title">Why RADAR <span>Wins</span></div>
+
+  <p>RADAR is designed to score at the top of every evaluation criterion defined by Samsung PRISM 2026.</p>
+
+  <div class="win-grid">
+    <div class="win-card">
+      <div class="win-criterion">
+        Functionality
+        <span class="win-score">35%</span>
+      </div>
+      <div class="win-bar"><div class="win-bar-fill" style="width:95%"></div></div>
+      <div class="win-detail">Two fully working modes — Opportunity (R2R) + Threat (SIGNAL) — demonstrated live with real ArXiv paper fetching and GitHub issue creation. Plus Research Trend Detection as bonus mode.</div>
+    </div>
+    <div class="win-card">
+      <div class="win-criterion">
+        Technical Depth
+        <span class="win-score">25%</span>
+      </div>
+      <div class="win-bar"><div class="win-bar-fill" style="width:90%"></div></div>
+      <div class="win-detail">Persistent memory architecture, semantic vector matching via ChromaDB, multi-source API orchestration, dual-mode ReAct loop, citation tracing to function level, feedback learning loop.</div>
+    </div>
+    <div class="win-card">
+      <div class="win-criterion">
+        UX / Novelty
+        <span class="win-score">15%</span>
+      </div>
+      <div class="win-bar"><div class="win-bar-fill" style="width:98%"></div></div>
+      <div class="win-detail">No existing tool bridges research intelligence to internal engineering work + competitive threat detection in one agent. Patent proximity scoring and feedback loops are completely novel for a hackathon.</div>
+    </div>
+    <div class="win-card">
+      <div class="win-criterion">
+        Business Relevance
+        <span class="win-score">15%</span>
+      </div>
+      <div class="win-bar"><div class="win-bar-fill" style="width:100%"></div></div>
+      <div class="win-detail">Samsung Research files ~10,000 patents/year. Missing a competitor's publication = millions in lost IP advantage. RADAR pays for itself on Day 1. Directly addresses Samsung's IP protection mandate.</div>
+    </div>
+  </div>
+
+  <div class="win-card" style="margin-top:10px;">
+    <div class="win-criterion">
+      Documentation
+      <span class="win-score">10%</span>
+    </div>
+    <div class="win-bar"><div class="win-bar-fill" style="width:90%;background:linear-gradient(90deg,#7C3AED,#C4B5FD);"></div></div>
+    <div class="win-detail">This structured proposal document + comprehensive GitHub README + demo video. Architecture diagrams, flowcharts, user journeys, component tables — all documented with engineering precision.</div>
+  </div>
+
+  <div class="spacer-md"></div>
+
+  <!-- Final competitive comparison -->
+  <div class="diagram-wrapper" style="padding:18px;">
+    <div class="diagram-title">⬡ COMPETITIVE DIFFERENTIATION MATRIX</div>
+    <table style="margin:0;">
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th style="text-align:center;">RADAR</th>
+          <th style="text-align:center;">Generic Paper Scraper</th>
+          <th style="text-align:center;">Manual Review</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Repo-aware matching</td>
+          <td style="text-align:center;color:#6EE7B7;">✅ Function-level</td>
+          <td style="text-align:center;color:#FCA5A5;">❌</td>
+          <td style="text-align:center;color:#FCD34D;">⚡ Senior engineer only</td>
+        </tr>
+        <tr>
+          <td>Competitor threat detection</td>
+          <td style="text-align:center;color:#6EE7B7;">✅ Real-time</td>
+          <td style="text-align:center;color:#FCA5A5;">❌</td>
+          <td style="text-align:center;color:#FCA5A5;">❌ Discovered by accident</td>
+        </tr>
+        <tr>
+          <td>Patent proximity scoring</td>
+          <td style="text-align:center;color:#6EE7B7;">✅ Google Patents</td>
+          <td style="text-align:center;color:#FCA5A5;">❌</td>
+          <td style="text-align:center;color:#FCA5A5;">❌</td>
+        </tr>
+        <tr>
+          <td>Research trend detection</td>
+          <td style="text-align:center;color:#6EE7B7;">✅ Multi-institution</td>
+          <td style="text-align:center;color:#FCA5A5;">❌</td>
+          <td style="text-align:center;color:#FCA5A5;">❌</td>
+        </tr>
+        <tr>
+          <td>Self-improving feedback loop</td>
+          <td style="text-align:center;color:#6EE7B7;">✅ 30-day calibration</td>
+          <td style="text-align:center;color:#FCA5A5;">❌</td>
+          <td style="text-align:center;color:#FCA5A5;">❌</td>
+        </tr>
+        <tr>
+          <td>Cost to Samsung</td>
+          <td style="text-align:center;color:#6EE7B7;font-weight:800;">₹0</td>
+          <td style="text-align:center;color:#FCD34D;">API costs</td>
+          <td style="text-align:center;color:#FCA5A5;">Engineer salary hours</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Closing statement -->
+  <div style="background:linear-gradient(135deg,rgba(20,40,160,0.2),rgba(124,58,237,0.15));border:1px solid rgba(37,99,235,0.3);border-radius:14px;padding:22px;text-align:center;margin-top:16px;">
+    <div style="font-family:'Outfit',sans-serif;font-size:16pt;font-weight:900;background:linear-gradient(135deg,#FFFFFF,#93C5FD,#6EE7FA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;">RADAR is not a paper alert system.</div>
+    <div style="font-size:9.5pt;color:var(--text-secondary);line-height:1.7;max-width:460px;margin:0 auto;">
+      It is the autonomous AI research colleague that Samsung Research engineers deserve — one that reads the codebase, watches the world, detects threats, surfaces opportunities, and gets smarter every single day.
+    </div>
+    <div style="margin-top:14px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+      <span class="badge badge-blue">OpenClaw (NomaClaw)</span>
+      <span class="badge badge-cyan">Theme 1 + Theme 3</span>
+      <span class="badge badge-purple">PRISM 2026</span>
+      <span class="badge badge-emerald">₹0 Operating Cost</span>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>RADAR · Samsung PRISM 2026</span>
+    <span>Page 11</span>
+    <span>Built with OpenClaw (NomaClaw) · April 24, 2026</span>
+  </div>
+</div>
+
+</body>
+</html>
